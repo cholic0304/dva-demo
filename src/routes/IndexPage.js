@@ -9,7 +9,6 @@ function IndexPage({ dispatch }) {
     <div className={styles.normal}>
       <h1 className={styles.title}>Yay! Welcome to dva!</h1>
       <div className={styles.welcome} />
-      <div><Link to="home">home</Link></div>
       <div><Link to="tetris">tetris</Link></div>
       <div><Link to="products">products</Link></div>
     </div>

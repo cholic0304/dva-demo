@@ -5,6 +5,8 @@ export default {
 
   state: {
     score: 0,
+    record: 0,
+    lines: 0,
     level: 1,
     mode: 'normal',
     screen: [], // 10*20显示格子

@@ -1,6 +1,22 @@
+
+@font-face {
+  /* font-properties */
+  font-family: led;
+  src:url('../../font/LED.ttf');
+}
+
 .tetris {
-  background: lightgray;
-  width: 600px;
-  height: 800px;
+  background: #e8d320;
+  width: 100vw;
+  height: 100vh;
   margin: 0 auto;
+  border: 1px solid #e8d320;
+  border-radius: 2vw;
+  -webkit-text-size-adjust:none;
+}
+@media  (min-width: 420px) {
+  .tetris{
+    width: 380px;
+    height: 600px;
+  }
 }

@@ -1,0 +1,53 @@
+
+.screen{
+  @pixel-color: #222222;
+  @shadow-color: #879773;
+  font-family: led, KaiTi, STKaiti;
+  width: 60%;
+  margin: 10% auto;
+  padding: 2%;
+  background-color: #9fb086;
+  .mainArea{
+    display: inline-block;
+    width:65%;
+    border: 1px solid gray;
+  }
+  .line{
+    line-height: 10%;
+  }
+  .cell{
+    width: 10%;
+    height: 10%;
+    padding: 1%;
+    border: 1px solid @shadow-color;
+    border-radius: 10%;
+    display: inline-block;
+    >div{
+      width: 100%;
+      padding-bottom: 100%;
+      border-radius: 20%;
+      background-color: @shadow-color;
+    }
+  }
+  .cell-fill{
+    border-color: @pixel-color;
+    >div{
+      background-color: @pixel-color;
+    }
+  }
+  .info{
+    width: 35%;
+    padding: 2%;
+    display: inline-block;
+    vertical-align: top;
+    font-size: 0.8rem;
+    font-color: @pixel-color;
+    .infoItem{
+      padding:5%;
+    }
+    .value{
+      text-align: end;
+      font-size: 1rem;
+    }
+  }
+}
