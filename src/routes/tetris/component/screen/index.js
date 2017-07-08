@@ -14,10 +14,10 @@ class Screen extends React.Component {
   render() {
     const { screen, score, level, lines } = this.props;
     const pixels = screen.map((line, rowIndex) => {
-      return <div className={styles.line}>
+      return <div className={styles.line} key={rowIndex}>
         {
           line.map((item, index) => {
-            return <div className={styles.cell}>
+            return <div className={styles.cell} key={index}>
               <div></div>
             </div>;
           })

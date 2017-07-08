@@ -3,6 +3,7 @@ import {connect} from 'dva';
 import 'antd/dist/antd.css';
 import styles from './index.less';
 import Screen from './component/screen';
+import Controller from './component/controller';
 
 class Tetris extends React.Component {
     render() {
@@ -11,6 +12,7 @@ class Tetris extends React.Component {
 
         return <div className={styles.tetris}>
           <Screen {...tetris} />
+          <Controller />
         </div>;
     }
 }

@@ -39,14 +39,21 @@ export default {
         screen.push(line);
       }
       yield put({
-        type: 'initScreen',
+        type: 'updateScreen',
+        payload: { screen },
+      });
+    },
+    *startGame({ payload }, { call, put }) {
+
+      yield put({
+        type: 'updateScreen',
         payload: { screen },
       });
     },
   },
 
   reducers: {
-    initScreen(state, action) {
+    updateScreen(state, action) {
       return { ...state, ...action.payload };
     },
   },
