@@ -9,11 +9,9 @@ function IndexPage({ dispatch }) {
     <div className={styles.normal}>
       <h1 className={styles.title}>Yay! Welcome to dva!</h1>
       <div className={styles.welcome} />
-      <ul className={styles.list}>
-        <li>To get started, edit <code>src/index.js</code> and save to reload.</li>
-        <li><a href="https://github.com/dvajs/dva-docs/blob/master/v1/en-us/getting-started.md">Getting Started</a></li>
-      </ul>
-      <Link to="products">products</Link>
+      <div><Link to="home">home</Link></div>
+      <div><Link to="tetris">tetris</Link></div>
+      <div><Link to="products">products</Link></div>
     </div>
   );
 }

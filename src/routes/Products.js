@@ -13,7 +13,6 @@ const Products = ({ dispatch, products }) => {
     <div>
       <h2>List of Products</h2>
       <ProductList onDelete={handleDelete} products={products} />
-      <div>demo</div>
     </div>
   );
 };
