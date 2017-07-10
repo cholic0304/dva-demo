@@ -18,9 +18,9 @@ class Controller extends React.Component {
       <div className={styles.leftArea}>
         <div className={styles.buttons}>
           <div className={styles.up}><Button icon="caret-up" /></div>
-          <div className={styles.left}><Button icon="caret-left" /></div>
-          <div className={styles.right}><Button icon="caret-right" /></div>
-          <div className={styles.down}><Button icon="caret-down" /></div>
+          <div className={styles.left} onClick={left}><Button icon="caret-left" /></div>
+          <div className={styles.right} onClick={right}><Button icon="caret-right" /></div>
+          <div className={styles.down} onClick={down}><Button icon="caret-down" /></div>
         </div>
       </div>
       <div className={styles.rightArea}>

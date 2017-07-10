@@ -8,7 +8,8 @@ export default {
     lines: 0,
     level: 1,
     mode: 'normal',
-    cruuentShape: {},
+    status: 'init', // init, start, pause
+    currentShape: {},
     nextShape: {},
     next: [],
     shapes: [
@@ -77,7 +78,6 @@ export default {
       },
     ],
     screen: [], // 10*20显示格子
-
   },
 
   subscriptions: {
@@ -115,32 +115,144 @@ export default {
       });
     },
     *startGame({ payload }, { call, put }) {
+      const interval = null;
 
       yield put({
-        type: 'updateScreen',
-        payload: { },
+        type: 'changeStatus',
+        payload: { status: 'start' },
       });
     },
     *createShape({ payload }, { select, call, put }) {
       let state = yield select(state => state.tetris);
+      let next = [...state.next];
       const shapes = state.shapes;
       const index = Math.floor(Math.random() * shapes.length);
-      const shape = shapes[index];
+      const shape = JSON.parse(JSON.stringify(shapes[index]));
+
+      shape.cells.forEach((item, index) => {
+        next[item.y][item.x].filled = true;
+      });
 
       yield put({
         type: 'pushShape',
         payload: shape,
       });
+      yield put({
+        type: 'pastShape',
+        payload: shape,
+      });
     },
+    *pastShape({ payload }, { select, call, put }) {
+      let state = yield select(state => state.tetris);
+      const shape = state.currentShape;
+      let screen = state.screen;
+
+      if (shape.cells) {
+        shape.cells.forEach((item, index) => {
+          screen[item.y][item.x].filled = true;
+          screen[item.y][item.x].state = 1;
+        });
+        yield put({
+          type: 'updateScreen',
+          payload: { screen },
+        });
+      }
+    },
+    *fixShape({ payload }, { select, call, put }) {
+      let state = yield select(state => state.tetris);
+      const shape = state.currentShape;
+      let screen = state.screen;
+      let touched = false;
+
+      if (shape.cells) {
+        touched = shape.cells.some((item, index) => {
+          return item.y === 19 || (screen[item.y + 1][item.x].filled && screen[item.y + 1][item.x].state === 0);
+        });
+
+        if (touched) {
+          shape.cells.forEach((item, index) => {
+            screen[item.y][item.x].filled = true;
+            screen[item.y][item.x].state = 0;
+          });
+          yield put({
+            type: 'updateScreen',
+            payload: { screen },
+          });
+          yield put({
+            type: 'createShape',
+            payload: {},
+          });
+        }
+      }
+    },
+    *moveShape({ payload }, { select, call, put }) {
+      const { move, rotate } = payload;
+      const state = yield select(state => state.tetris);
+      if (state.status !== 'start') {
+        return;
+      }
+      let shape = {...state.currentShape};
+      let screen = [...state.screen];
+      const next = state.next;
+
+      screen.forEach((line) => {
+        line.forEach((cell) => {
+          if (cell.state) {
+            cell.filled = false;
+          }
+        });
+      });
+
+      const touchLeft = shape.cells.some(item => {
+        return item.x === 0;
+      });
+      const touchRight = shape.cells.some(item => {
+        return item.x === 9;
+      });
+      const touchBottom = shape.cells.some(item => {
+        return item.y === 19;
+      });
+
+      if (move) {
+        shape.center.x = shape.center.x + move.x;
+        shape.center.y += move.y;
+        shape.cells.forEach((item) => {
+          item.x += (touchLeft && move.x < 0) || (touchRight && move.x > 0) ? 0 : move.x;
+          item.y += touchBottom ? 0 : move.y;
+        });
+      }
+
+      yield put({
+        type: 'updateShape',
+        payload: shape,
+      });
+
+      yield put({
+        type: 'pastShape',
+        payload: shape,
+      });
+      yield put({
+        type: 'fixShape',
+        payload: shape,
+      });
+
+    },
+
   },
 
   reducers: {
+    changeStatus(state, action) {
+      return { ...state, ...action.payload };
+    },
     updateScreen(state, action) {
       return { ...state, ...action.payload };
     },
     pushShape(state, action) {
-      return { ...state, currentShape: { ...state.nextShape }, nextShape: { ...action.payload } }
-    }
+      return { ...state, currentShape: { ...state.nextShape }, nextShape: { ...action.payload } };
+    },
+    updateShape(state, action) {
+      return { ...state, currentShape: { ...action.payload } };
+    },
   },
 
 };

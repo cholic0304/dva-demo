@@ -9,6 +9,18 @@ class Tetris extends React.Component {
     render() {
         const {dispatch, tetris} = this.props;
         const { screen } = tetris;
+        let interval = () => {
+          dispatch({
+            type: 'tetris/moveShape',
+            payload: {
+              move: { x: 0, y: 1 },
+            },
+          });
+          dispatch({
+            type: 'tetris/fixShape',
+            payload: {},
+          });
+        };
 
         const buttonHandle = {
           start: () => {
@@ -17,15 +29,41 @@ class Tetris extends React.Component {
               payload: {},
             });
             dispatch({
+              type: 'tetris/createShape',
+              payload: {},
+            });
+            dispatch({
               type: 'tetris/startGame',
               payload: {},
             });
+            setInterval(interval, 1000);
           },
           restart: () => {},
           up: () => {},
-          down: () => {},
-          left: () => {},
-          right: () => {},
+          down: () => {
+            dispatch({
+              type: 'tetris/moveShape',
+              payload: {
+                move: { x: 0, y: 1 },
+              },
+            });
+          },
+          left: () => {
+            dispatch({
+              type: 'tetris/moveShape',
+              payload: {
+                move: { x: -1, y: 0 },
+              },
+            });
+          },
+          right: () => {
+            dispatch({
+              type: 'tetris/moveShape',
+              payload: {
+                move: { x: 1, y: 0 },
+              },
+            });
+          },
           actionA: () => {},
           actionB: () => {},
         };
