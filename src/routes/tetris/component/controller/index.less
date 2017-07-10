@@ -1,5 +1,6 @@
+@import "../../../../utils/common";
 .controller{
-  @button-height: 50px;
+  @button-height: 8%;
   width: 100%;
   display: flex;
   .leftArea{
@@ -24,28 +25,23 @@
     padding-bottom: 100%;
     >div{
       position: absolute;
-      height: @button-height;
     }
   }
   .up{
-    left: 50%;
     top: 0;
-    margin-left: -@button-height/2;
+    .h-center;
   }
   .down{
-    left: 50%;
     bottom: 0;
-    margin-left: -@button-height/2;
+    .h-center;
   }
   .left{
     left: 0;
-    top: 50%;
-    margin-top: -@button-height/2;
+    .v-center;
   }
   .right{
-    top: 50%;
     right: 0;
-    margin-top: -@button-height/2;
+    .v-center;
   }
   .actionA{
     top: 20%;
@@ -54,10 +50,13 @@
     top: 10%;
     left: 50%;
   }
+  .extraArea{
+    margin-top: -10%;
+  }
   .start, .restart {
     //transform: rotate(-15deg);
     display: inline-block;
-    margin-right: 20px;
+    margin-right: 10%;
     text-align: center;
     button{
       border-radius: 30%;

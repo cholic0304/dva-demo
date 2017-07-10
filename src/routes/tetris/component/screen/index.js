@@ -12,18 +12,25 @@ class Screen extends React.Component {
   }
 
   render() {
-    const { screen, score, level, lines } = this.props;
-    const pixels = screen.map((line, rowIndex) => {
-      return <div className={styles.line} key={rowIndex}>
-        {
-          line.map((item, index) => {
-            return <div className={styles.cell} key={index}>
-              <div></div>
-            </div>;
-          })
-        }
-      </div>
-    });
+    const { screen, score, level, lines, nextShape, next } = this.props;
+
+    const initScreen = (screen) => {
+      const pixels = screen.map((line, rowIndex) => {
+        return <div className={styles.line} key={rowIndex}>
+          {
+            line.map((item, index) => {
+              return <div className={(item.filled ? (styles.cell + ' ' + styles.cellFilled) : styles.cell)} key={index}>
+                <div></div>
+              </div>;
+            })
+          }
+        </div>
+      });
+      return pixels;
+    };
+    const pixels = initScreen(screen);
+    const nextPixels = initScreen(next);
+
     return <div className={styles.screen}>
       <div className={styles.mainArea}>{pixels}</div>
       <div className={styles.info}>
@@ -38,6 +45,10 @@ class Screen extends React.Component {
         <div className={styles.infoItem}>
           <div className={styles.tag}>级别：</div>
           <div className={styles.value}>{level}</div>
+        </div>
+        <div className={styles.infoItem}>
+          <div className={styles.tag}>下一个：</div>
+          <div className={styles.value}>{nextPixels}</div>
         </div>
       </div>
     </div>

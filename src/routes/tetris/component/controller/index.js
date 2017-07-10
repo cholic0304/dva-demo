@@ -11,12 +11,8 @@ class Controller extends React.Component {
   componentDidMount() {
   }
 
-  start = () => {
-
-  }
-
   render() {
-    const { dispatch } = this.props;
+    const { start, restart, up, down, left, right, actionA, actionB } = this.props;
 
     return <div className={styles.controller}>
       <div className={styles.leftArea}>
@@ -28,13 +24,15 @@ class Controller extends React.Component {
         </div>
       </div>
       <div className={styles.rightArea}>
-        <div className={styles.start}>
-          <div>开始/暂停</div>
-          <Button />
-        </div>
-        <div className={styles.restart}>
-          <div>重置</div>
-          <Button />
+        <div className={styles.extraArea}>
+          <div className={styles.start}>
+            <div>开始/暂停</div>
+            <Button onClick={start} />
+          </div>
+          <div className={styles.restart}>
+            <div>重置</div>
+            <Button />
+          </div>
         </div>
         <div className={styles.buttons}>
           <div className={styles.actionA}><Button >A</Button></div>

@@ -10,9 +10,29 @@ class Tetris extends React.Component {
         const {dispatch, tetris} = this.props;
         const { screen } = tetris;
 
+        const buttonHandle = {
+          start: () => {
+            dispatch({
+              type: 'tetris/createShape',
+              payload: {},
+            });
+            dispatch({
+              type: 'tetris/startGame',
+              payload: {},
+            });
+          },
+          restart: () => {},
+          up: () => {},
+          down: () => {},
+          left: () => {},
+          right: () => {},
+          actionA: () => {},
+          actionB: () => {},
+        };
+
         return <div className={styles.tetris}>
           <Screen {...tetris} />
-          <Controller />
+          <Controller {...buttonHandle} />
         </div>;
     }
 }
