@@ -8,7 +8,11 @@ class Screen extends React.Component {
     this.state = {};
   }
 
-  componentDidMount() {
+  componentWillReceiveProps(nextProps) {
+    // 当有新的查询结果时刷新并提醒
+    if (this.props.level !== nextProps.level) {
+      this.props.setRefresh(nextProps.level);
+    }
   }
 
   render() {

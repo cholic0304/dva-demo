@@ -8,7 +8,7 @@ export default {
     lines: 0,
     level: 1,
     mode: 'normal',
-    status: 'init', // init, start, pause
+    status: 'init', // init, start, pause, clearing
     interval: null,
     currentShape: {},
     nextShape: {},
@@ -118,61 +118,7 @@ export default {
     },
     *startGame({ payload }, { select, call, put }) {
       let state = yield select(state => state.tetris);
-      let interval;
-      debugger
-      let intervalFun = function () {
-        debugger;
-        put({
-          type: 'moveShape',
-          payload: {
-            move: { x: 0, y: 1 },
-          },
-        });
-        put({
-          type: 'fixShape',
-          payload: {},
-        });
-      };
 
-      if (state.status === 'init') {
-        yield put({
-          type: 'createShape',
-          payload: {},
-        });
-        yield put({
-          type: 'createShape',
-          payload: {},
-        });
-        yield put({
-          type: 'changeStatus',
-          payload: { status: 'start' },
-        });
-        interval = setInterval(intervalFun, 1000);
-        yield put({
-          type: 'setInterval',
-          payload: interval,
-        });
-      } else if (state.status === 'start') {
-        clearInterval(state.interval);
-        yield put({
-          type: 'changeStatus',
-          payload: { status: 'pause' },
-        });
-      } else {
-        interval = setInterval(intervalFun, 1000);
-        yield put({
-          type: 'setInterval',
-          payload: interval,
-        });
-        yield put({
-          type: 'changeStatus',
-          payload: { status: 'start' },
-        });
-      }
-      yield put({
-        type: 'changeStatus',
-        payload: { status: 'start' },
-      });
     },
     *createShape({ payload }, { select, call, put }) {
       yield put({
@@ -181,7 +127,7 @@ export default {
       });
 
       let state = yield select(state => state.tetris);
-      let next = [...state.next];
+      let next = JSON.parse(JSON.stringify(state.next));
       const shapes = state.shapes;
       const index = Math.floor(Math.random() * shapes.length);
       // const index = 3;
@@ -201,56 +147,34 @@ export default {
       });
     },
     *pastShape({ payload }, { select, call, put }) {
-      let state = yield select(state => state.tetris);
+      const state = yield select(state => state.tetris);
       const shape = state.currentShape;
-      let screen = state.screen;
+      const nextShape = state.nextShape;
+      const screen = JSON.parse(JSON.stringify(state.screen));
+      const next = JSON.parse(JSON.stringify(state.next));
 
       if (shape.cells) {
-        shape.cells.forEach((item, index) => {
+        shape.cells.forEach((item) => {
           screen[item.y][item.x].filled = true;
           screen[item.y][item.x].state = 1;
         });
+        nextShape.cells.forEach((item) => {
+          next[item.y][item.x].filled = true;
+          next[item.y][item.x].state = 1;
+        });
         yield put({
           type: 'updateScreen',
-          payload: { screen },
+          payload: { screen, next },
         });
-      }
-    },
-    *fixShape({ payload }, { select, call, put }) {
-      let state = yield select(state => state.tetris);
-      const shape = state.currentShape;
-      let screen = state.screen;
-      let touched = false;
-
-      if (shape.cells) {
-        touched = shape.cells.some((item, index) => {
-          return item.y === 19 || (screen[item.y + 1][item.x].filled && screen[item.y + 1][item.x].state === 0);
-        });
-
-        if (touched) {
-          shape.cells.forEach((item, index) => {
-            screen[item.y][item.x].filled = true;
-            screen[item.y][item.x].state = 0;
-          });
-          yield put({
-            type: 'updateScreen',
-            payload: { screen },
-          });
-          yield put({
-            type: 'createShape',
-            payload: {},
-          });
-        }
       }
     },
     *moveShape({ payload }, { select, call, put }) {
       const { move, rotate } = payload;
       const state = yield select(state => state.tetris);
-      console.log(state.status);
       if (state.status !== 'start') {
         return;
       }
-      let shape = {...state.currentShape};
+      let shape = JSON.parse(JSON.stringify(state.currentShape));
       let screen = [...state.screen];
       const next = state.next;
 
@@ -262,30 +186,28 @@ export default {
         });
       });
 
-      const touchLeft = shape.cells.some(item => {
-        return item.x === 0;
-      });
-      const touchRight = shape.cells.some(item => {
-        return item.x === 9;
-      });
-      const touchBottom = shape.cells.some(item => {
-        return item.y === 19;
-      });
-
       if (move) {
         shape.center.x = shape.center.x + move.x;
         shape.center.y += move.y;
         shape.cells.forEach((item) => {
-          item.x += (touchLeft && move.x < 0) || (touchRight && move.x > 0) ? 0 : move.x;
-          item.y += touchBottom ? 0 : move.y;
+          item.x += move.x;
+          item.y += move.y;
         });
       } else if (rotate) {
-        shape.cells.forEach(item => {
+        shape.cells.forEach((item) => {
           const x = item.x;
           const y = item.y;
           item.y = shape.center.y + ((x - shape.center.x) * rotate);
           item.x = shape.center.x - ((y - shape.center.y) * rotate);
         });
+      }
+
+      // if the new position is out of screen or already filled with blocks, then cancel this action
+      const invalid = shape.cells.some((item) => {
+        return item.x < 0 || item.x > 9 || item.y < 0 || item.y > 19 || screen[item.y][item.x].filled;
+      });
+      if (invalid) {
+        return;
       }
 
       yield put({
@@ -297,11 +219,84 @@ export default {
         type: 'pastShape',
         payload: shape,
       });
-      yield put({
-        type: 'fixShape',
-        payload: shape,
-      });
+    },
+    *fixShape({ payload }, { select, call, put }) {
+      const state = yield select(state => state.tetris);
+      if (state.status !== 'start') {
+        return;
+      }
+      const shape = state.currentShape;
+      const screen = JSON.parse(JSON.stringify(state.screen));
+      let touched = false;
 
+      if (shape.cells) {
+        touched = shape.cells.some((item) => {
+          return item.y === 19 || (screen[item.y + 1][item.x].filled && screen[item.y + 1][item.x].state === 0);
+        });
+
+        if (touched) {
+          shape.cells.forEach((item) => {
+            screen[item.y][item.x].filled = true;
+            screen[item.y][item.x].state = 0;
+          });
+          if (shape.cells.some(item => item.y <= 0)) {
+            yield put({
+              type: 'changeStatus',
+              payload: { status: 'gameover' },
+            });
+            alert('GAME OVER');
+            return;
+          }
+          yield put({
+            type: 'updateScreen',
+            payload: { screen },
+          });
+
+          yield put({
+            type: 'claerShape',
+            payload: null,
+          });
+          yield put({
+            type: 'createShape',
+            payload: {},
+          });
+        }
+      }
+    },
+    // if one or more lines are full filled with blocks, remove them
+    *claerShape({ payload }, { select, call, put }) {
+      const state = yield select(state => state.tetris);
+      const screen = JSON.parse(JSON.stringify(state.screen));
+      let newScreen = [];
+      let removeLines = [];
+      let addScore = 0;
+      let lineCount = 0;
+
+      screen.forEach((line) => {
+        if (line.every(item => item.filled)) {
+          removeLines.push(line.map((item) => { return { ...item, filled: false }; }));
+          addScore = addScore + 10;
+          lineCount ++;
+        } else {
+          newScreen.push(line);
+        }
+      });
+      if (addScore) {
+        const score = state.score + addScore*lineCount;
+        yield put({
+          type: 'updateScore',
+          payload: {
+            score,
+            record: score > state.record ? score : state.record,
+            lines: state.lines + lineCount,
+            level: Math.floor(state.score / 1000) + 1,
+          },
+        });
+        yield put({
+          type: 'updateScreen',
+          payload: { screen: [...removeLines, ...newScreen] },
+        });
+      }
     },
 
   },
@@ -310,11 +305,20 @@ export default {
     changeStatus(state, action) {
       return { ...state, ...action.payload };
     },
+    updateScore(state, action) {
+      return { ...state, ...action.payload };
+    },
     updateScreen(state, action) {
       return { ...state, ...action.payload };
     },
     pushShape(state, action) {
-      return { ...state, currentShape: { ...state.nextShape }, nextShape: { ...action.payload } };
+      const nextShape = JSON.parse(JSON.stringify(state.nextShape));
+      if (nextShape && nextShape.cells) {
+        nextShape.cells.forEach((item) => {
+          item.x += 4;
+        });
+      }
+      return { ...state, currentShape: nextShape, nextShape: { ...action.payload } };
     },
     updateShape(state, action) {
       return { ...state, currentShape: { ...action.payload } };
