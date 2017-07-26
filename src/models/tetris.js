@@ -9,6 +9,7 @@ export default {
     level: 1,
     mode: 'normal',
     status: 'init', // init, start, pause
+    interval: null,
     currentShape: {},
     nextShape: {},
     next: [],
@@ -20,7 +21,7 @@ export default {
           { x: 2, y: 0 },
           { x: 3, y: 0 },
         ],
-        center: { x: 1.5, y: 0 },
+        center: { x: 2, y: 0 },
       },
       {
         cells: [
@@ -38,7 +39,7 @@ export default {
           { x: 0, y: 1 },
           { x: 1, y: 1 },
         ],
-        center: { x: 1, y: 0 },
+        center: { x: 0.5, y: 0.5 },
       },
       {
         cells: [
@@ -47,16 +48,16 @@ export default {
           { x: 1, y: 1 },
           { x: 2, y: 1 },
         ],
-        center: { x: 1, y: 0 },
+        center: { x: 1, y: 1 },
       },
       {
         cells: [
-          { x: 0, y: 0 },
+          { x: 2, y: 0 },
           { x: 1, y: 0 },
           { x: 1, y: 1 },
           { x: 0, y: 1 },
         ],
-        center: { x: 1, y: 0 },
+        center: { x: 1, y: 1 },
       },
       {
         cells: [
@@ -84,13 +85,14 @@ export default {
     setup({ dispatch, history }) {
       dispatch({
         type: 'clearScreen',
-        payload: {}
+        payload: { screen: true, next: true },
       });
     },
   },
 
   effects: {
-    *clearScreen({ payload }, { call, put }) {
+    *clearScreen({ payload }, { select, call, put }) {
+      let state = yield select(state => state.tetris);
       const initScreen = (row, column) => {
         const pixels = [];
         for (let i = 1; i <= row; i++) {
@@ -107,26 +109,82 @@ export default {
         }
         return pixels;
       };
-      const screen = initScreen(20, 10);
-      const next = initScreen(2, 4);
+      const screen = payload.screen ? initScreen(20, 10) : state.screen;
+      const next = payload.next ? initScreen(2, 4) : state.next;
       yield put({
         type: 'updateScreen',
         payload: { screen, next },
       });
     },
-    *startGame({ payload }, { call, put }) {
-      const interval = null;
+    *startGame({ payload }, { select, call, put }) {
+      let state = yield select(state => state.tetris);
+      let interval;
+      debugger
+      let intervalFun = function () {
+        debugger;
+        put({
+          type: 'moveShape',
+          payload: {
+            move: { x: 0, y: 1 },
+          },
+        });
+        put({
+          type: 'fixShape',
+          payload: {},
+        });
+      };
 
+      if (state.status === 'init') {
+        yield put({
+          type: 'createShape',
+          payload: {},
+        });
+        yield put({
+          type: 'createShape',
+          payload: {},
+        });
+        yield put({
+          type: 'changeStatus',
+          payload: { status: 'start' },
+        });
+        interval = setInterval(intervalFun, 1000);
+        yield put({
+          type: 'setInterval',
+          payload: interval,
+        });
+      } else if (state.status === 'start') {
+        clearInterval(state.interval);
+        yield put({
+          type: 'changeStatus',
+          payload: { status: 'pause' },
+        });
+      } else {
+        interval = setInterval(intervalFun, 1000);
+        yield put({
+          type: 'setInterval',
+          payload: interval,
+        });
+        yield put({
+          type: 'changeStatus',
+          payload: { status: 'start' },
+        });
+      }
       yield put({
         type: 'changeStatus',
         payload: { status: 'start' },
       });
     },
     *createShape({ payload }, { select, call, put }) {
+      yield put({
+        type: 'clearScreen',
+        payload: { screen: false, next: true },
+      });
+
       let state = yield select(state => state.tetris);
       let next = [...state.next];
       const shapes = state.shapes;
       const index = Math.floor(Math.random() * shapes.length);
+      // const index = 3;
       const shape = JSON.parse(JSON.stringify(shapes[index]));
 
       shape.cells.forEach((item, index) => {
@@ -188,6 +246,7 @@ export default {
     *moveShape({ payload }, { select, call, put }) {
       const { move, rotate } = payload;
       const state = yield select(state => state.tetris);
+      console.log(state.status);
       if (state.status !== 'start') {
         return;
       }
@@ -219,6 +278,13 @@ export default {
         shape.cells.forEach((item) => {
           item.x += (touchLeft && move.x < 0) || (touchRight && move.x > 0) ? 0 : move.x;
           item.y += touchBottom ? 0 : move.y;
+        });
+      } else if (rotate) {
+        shape.cells.forEach(item => {
+          const x = item.x;
+          const y = item.y;
+          item.y = shape.center.y + ((x - shape.center.x) * rotate);
+          item.x = shape.center.x - ((y - shape.center.y) * rotate);
         });
       }
 
@@ -252,6 +318,9 @@ export default {
     },
     updateShape(state, action) {
       return { ...state, currentShape: { ...action.payload } };
+    },
+    setInterval(state, action) {
+      return { ...state, interval: action.payload };
     },
   },
 

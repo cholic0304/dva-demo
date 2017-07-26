@@ -10,12 +10,12 @@ class Tetris extends React.Component {
         const {dispatch, tetris} = this.props;
         const { screen } = tetris;
         let interval = () => {
-          dispatch({
-            type: 'tetris/moveShape',
-            payload: {
-              move: { x: 0, y: 1 },
-            },
-          });
+          // dispatch({
+          //   type: 'tetris/moveShape',
+          //   payload: {
+          //     move: { x: 0, y: 1 },
+          //   },
+          // });
           dispatch({
             type: 'tetris/fixShape',
             payload: {},
@@ -25,21 +25,19 @@ class Tetris extends React.Component {
         const buttonHandle = {
           start: () => {
             dispatch({
-              type: 'tetris/createShape',
-              payload: {},
-            });
-            dispatch({
-              type: 'tetris/createShape',
-              payload: {},
-            });
-            dispatch({
               type: 'tetris/startGame',
               payload: {},
             });
-            setInterval(interval, 1000);
           },
           restart: () => {},
-          up: () => {},
+          up: () => {
+            dispatch({
+              type: 'tetris/moveShape',
+              payload: {
+                rotate: 1,
+              },
+            });
+          },
           down: () => {
             dispatch({
               type: 'tetris/moveShape',
@@ -64,8 +62,22 @@ class Tetris extends React.Component {
               },
             });
           },
-          actionA: () => {},
-          actionB: () => {},
+          actionA: () => {
+            dispatch({
+              type: 'tetris/moveShape',
+              payload: {
+                rotate: 1,
+              },
+            });
+          },
+          actionB: () => {
+            dispatch({
+              type: 'tetris/moveShape',
+              payload: {
+                rotate: -1,
+              },
+            });
+          },
         };
 
         return <div className={styles.tetris}>

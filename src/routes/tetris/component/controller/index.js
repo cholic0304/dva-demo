@@ -17,7 +17,7 @@ class Controller extends React.Component {
     return <div className={styles.controller}>
       <div className={styles.leftArea}>
         <div className={styles.buttons}>
-          <div className={styles.up}><Button icon="caret-up" /></div>
+          <div className={styles.up} onClick={up}><Button icon="caret-up" /></div>
           <div className={styles.left} onClick={left}><Button icon="caret-left" /></div>
           <div className={styles.right} onClick={right}><Button icon="caret-right" /></div>
           <div className={styles.down} onClick={down}><Button icon="caret-down" /></div>
@@ -31,12 +31,12 @@ class Controller extends React.Component {
           </div>
           <div className={styles.restart}>
             <div>重置</div>
-            <Button />
+            <Button onClick={restart} />
           </div>
         </div>
         <div className={styles.buttons}>
-          <div className={styles.actionA}><Button >A</Button></div>
-          <div className={styles.actionB}><Button >B</Button></div>
+          <div className={styles.actionA} onClick={actionA}><Button >A</Button></div>
+          <div className={styles.actionB} onClick={actionB}><Button >B</Button></div>
         </div>
       </div>
     </div>
