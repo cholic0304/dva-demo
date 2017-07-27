@@ -76,7 +76,12 @@ class Tetris extends React.Component {
           });
         }
       },
-      restart: () => {},
+      restart: () => {
+        dispatch({
+          type: 'tetris/initGame',
+          payload: true,
+        });
+      },
       up: () => {
         dispatch({
           type: 'tetris/moveShape',

@@ -84,13 +84,124 @@ export default {
   subscriptions: {
     setup({ dispatch, history }) {
       dispatch({
-        type: 'clearScreen',
-        payload: { screen: true, next: true },
+        type: 'initGame',
+        payload: null,
       });
     },
   },
 
   effects: {
+    *initGame({ payload }, { select, call, put }) {
+      let oldState = localStorage.getItem('state');
+      if (payload) {
+        const state = {
+          score: 0,
+            record: 0,
+            lines: 0,
+            level: 1,
+            mode: 'normal',
+            status: 'init', // init, start, pause, clearing
+            interval: null,
+            currentShape: {},
+          nextShape: {},
+          next: [],
+            shapes: [
+            {
+              cells: [
+                { x: 0, y: 0 },
+                { x: 1, y: 0 },
+                { x: 2, y: 0 },
+                { x: 3, y: 0 },
+              ],
+              center: { x: 2, y: 0 },
+            },
+            {
+              cells: [
+                { x: 0, y: 0 },
+                { x: 1, y: 0 },
+                { x: 2, y: 0 },
+                { x: 1, y: 1 },
+              ],
+              center: { x: 1, y: 0 },
+            },
+            {
+              cells: [
+                { x: 0, y: 0 },
+                { x: 1, y: 0 },
+                { x: 0, y: 1 },
+                { x: 1, y: 1 },
+              ],
+              center: { x: 0.5, y: 0.5 },
+            },
+            {
+              cells: [
+                { x: 0, y: 0 },
+                { x: 1, y: 0 },
+                { x: 1, y: 1 },
+                { x: 2, y: 1 },
+              ],
+              center: { x: 1, y: 1 },
+            },
+            {
+              cells: [
+                { x: 2, y: 0 },
+                { x: 1, y: 0 },
+                { x: 1, y: 1 },
+                { x: 0, y: 1 },
+              ],
+              center: { x: 1, y: 1 },
+            },
+            {
+              cells: [
+                { x: 0, y: 0 },
+                { x: 1, y: 0 },
+                { x: 2, y: 0 },
+                { x: 2, y: 1 },
+              ],
+              center: { x: 1, y: 0 },
+            },
+            {
+              cells: [
+                { x: 0, y: 0 },
+                { x: 1, y: 0 },
+                { x: 2, y: 0 },
+                { x: 0, y: 1 },
+              ],
+              center: { x: 1, y: 0 },
+            },
+          ],
+            screen: [], // 10*20显示格子
+        };
+        yield put({
+          type: 'initState',
+          payload: state,
+        });
+        yield put({
+          type: 'saveState',
+          payload: false,
+        });
+        yield put({
+          type: 'clearScreen',
+          payload: { screen: true, next: true },
+        });
+      } else if (oldState) {
+        oldState = JSON.parse(oldState);
+        debugger;
+        yield put({
+          type: 'initState',
+          payload: oldState,
+        });
+        yield put({
+          type: 'changeStatus',
+          payload: { status: 'pause' },
+        });
+      } else {
+        yield put({
+          type: 'clearScreen',
+          payload: { screen: true, next: true },
+        });
+      }
+    },
     *clearScreen({ payload }, { select, call, put }) {
       let state = yield select(state => state.tetris);
       const initScreen = (row, column) => {
@@ -240,12 +351,20 @@ export default {
             screen[item.y][item.x].state = 0;
           });
           if (shape.cells.some(item => item.y <= 0)) {
+            clearInterval(state.interval);
             yield put({
               type: 'changeStatus',
               payload: { status: 'gameover' },
             });
+            yield put({
+              type: 'saveState',
+              payload: false,
+            });
             alert('GAME OVER');
-            return;
+            yield put({
+              type: 'initGame',
+              payload: true,
+            });
           }
           yield put({
             type: 'updateScreen',
@@ -259,6 +378,11 @@ export default {
           yield put({
             type: 'createShape',
             payload: {},
+          });
+
+          yield put({
+            type: 'saveState',
+            payload: true,
           });
         }
       }
@@ -298,10 +422,22 @@ export default {
         });
       }
     },
+    *saveState({ payload }, { select, call, put }) {
+      const state = yield select(state => state.tetris);
+      if (payload) {
+        localStorage.setItem('state', JSON.stringify(state));
+      } else {
+        localStorage.removeItem('state');
+      }
+    },
 
   },
 
   reducers: {
+    initState(state, action) {
+      debugger;
+      return { ...state, ...action.payload };
+    },
     changeStatus(state, action) {
       return { ...state, ...action.payload };
     },

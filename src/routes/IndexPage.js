@@ -7,10 +7,10 @@ function IndexPage({ dispatch }) {
 
   return (
     <div className={styles.normal}>
-      <h1 className={styles.title}>Yay! Welcome to dva!</h1>
+      <h1 className={styles.title}>欢迎参观陈因为的玩具屋～</h1>
       <div className={styles.welcome} />
-      <div><Link to="tetris">tetris</Link></div>
-      <div><Link to="products">products</Link></div>
+      <div><Link to="tetris">俄罗斯方块</Link></div>
+      {/*<div><Link to="products">products</Link></div>*/}
     </div>
   );
 }
