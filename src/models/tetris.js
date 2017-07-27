@@ -317,6 +317,7 @@ export default {
         nextShape.cells.forEach((item) => {
           item.x += 4;
         });
+        nextShape.center.x += 4;
       }
       return { ...state, currentShape: nextShape, nextShape: { ...action.payload } };
     },
