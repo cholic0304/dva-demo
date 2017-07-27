@@ -186,7 +186,6 @@ export default {
         });
       } else if (oldState) {
         oldState = JSON.parse(oldState);
-        debugger;
         yield put({
           type: 'initState',
           payload: oldState,
@@ -435,7 +434,6 @@ export default {
 
   reducers: {
     initState(state, action) {
-      debugger;
       return { ...state, ...action.payload };
     },
     changeStatus(state, action) {
