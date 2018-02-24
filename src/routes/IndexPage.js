@@ -11,7 +11,11 @@ function IndexPage({ dispatch }) {
           <span className={styles.rotate}>～</span>
         </h1>
         <div className={styles.welcome} />
-        <div className={styles.list}><Link to="tetris">俄罗斯方块</Link></div>
+        <div className={styles.list}>
+          <div className={styles.item}><Link to="tetris">俄罗斯<br></br>方块</Link></div>
+          <div className={styles.item}><Link to="tetris">俄罗斯<br></br>方块</Link></div>
+          <div className={styles.item}><Link to="tetris">俄罗斯<br></br>方块</Link></div>
+        </div>
       </div>
     </div>
   );

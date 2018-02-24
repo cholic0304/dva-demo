@@ -1,61 +1,83 @@
-.container{
-  height:100%;
-  background-color: #eeeeee;
-}
-.normal {
-  font-family: Georgia, sans-serif;
-  text-align: center;
-  width: 1024px;
+.container {
   height: 100%;
-  margin: auto;
-  padding-top: 40px;
-  background-color: white;
-  box-shadow: 0 0 10px 0 #aaa;
-}
+  background-color: #eeeeee;
 
-.title {
-  font-size: 2.5rem;
-  font-weight: normal;
-  letter-spacing: -1px;
-}
+  .normal {
+    font-family: Georgia, sans-serif;
+    text-align: center;
+    width: 1024px;
+    height: 100%;
+    margin: auto;
+    padding-top: 40px;
+    background-color: white;
+    box-shadow: 0 0 10px 0 #aaa;
+  }
 
-.welcome {
-  height: 328px;
-  background: url(../assets/yay.jpg) no-repeat center 0;
-  background-size: 388px 328px;
-}
+  .title {
+    font-size: 2.5rem;
+    font-weight: normal;
+    letter-spacing: -1px;
+  }
 
-.list {
-  font-size: 1.2em;
-  margin-top: 1.8em;
-  list-style: none;
-  line-height: 1.5em;
-}
+  .welcome {
+    height: 328px;
+    background: url(../assets/yay.jpg) no-repeat center 0;
+    background-size: 388px 328px;
+  }
 
-.list code {
-  background: #f7f7f7;
-}
+  .list {
+    font-size: 1.2em;
+    margin-top: 1.8em;
+    list-style: none;
+    line-height: 3em;
+    padding: 0 100px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 
-.list a {
-  line-height: 3em;
-  display: inline-block;
-  padding: 0 1em;
-  border: 1px solid #108ee9;
-  color: #108ee9;
-  border-radius: 1em;
-}
+    .item {
+      width: 100px;
+      height: 100px;
+      margin: 5px;
+      transition: 0.1s;
+      border: 1px solid #108ee9;
+      color: #108ee9;
+    }
+    .item:hover{
+      width: 110px;
+      height: 110px;
+      margin: 0;
+      font-size: 1.3em;
+      line-height: 2.5em;
+      color: white;
+      background-color: #108ee9;
+    }
 
-.list a:hover {
-  color: white;
-  background-color: #108ee9;
-}
+    a {
+      height: 100%;
+      width: 100%;
+      display: inline-block;
+      padding: 0.5em 1em;
+    }
 
-.rotate {
-  color: #108ee9;
-  animation: 1s rainbow infinite;
-}
-@keyframes rainbow {
-  0% { background: #c00; }
-  50% { background: orange; }
-  100% { background: yellowgreen; }
+    a:hover {
+      color: white;
+    }
+  }
+
+  .rotate {
+    color: #108ee9;
+    animation: 1s rainbow infinite;
+  }
+  @keyframes rainbow {
+    0% {
+      background: #c00;
+    }
+    50% {
+      background: orange;
+    }
+    100% {
+      background: yellowgreen;
+    }
+  }
 }
