@@ -30,12 +30,12 @@ class Tetris extends React.Component {
             type: 'tetris/fixShape',
             payload: {},
           });
-        }, time/5);
+        }, time / 5);
       };
     };
     const setRefresh = (level) => {
       clearInterval(interval);
-      const time = 1000/level;
+      const time = 1000 / level;
       return setInterval(intervalFun(time, level), time);
     };
     tetris.setRefresh = setRefresh;
@@ -132,10 +132,12 @@ class Tetris extends React.Component {
       },
     };
 
-    return <div className={styles.tetris}>
-      <Screen {...tetris} />
-      <Controller {...buttonHandle} />
-    </div>;
+    return (
+      <div className={styles.tetris}>
+        <Screen {...tetris} />
+        <Controller {...buttonHandle} />
+      </div>
+    );
   }
 }
 

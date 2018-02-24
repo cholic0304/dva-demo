@@ -92,20 +92,20 @@ export default {
 
   effects: {
     *initGame({ payload }, { select, call, put }) {
-      let oldState = localStorage.getItem('state');
+      let oldState = window.localStorage.getItem('state');
       if (payload) {
         const state = {
           score: 0,
-            record: 0,
-            lines: 0,
-            level: 1,
-            mode: 'normal',
-            status: 'init', // init, start, pause, clearing
-            interval: null,
-            currentShape: {},
+          record: 0,
+          lines: 0,
+          level: 1,
+          mode: 'normal',
+          status: 'init', // init, start, pause, clearing
+          interval: null,
+          currentShape: {},
           nextShape: {},
           next: [],
-            shapes: [
+          shapes: [
             {
               cells: [
                 { x: 0, y: 0 },
@@ -170,7 +170,7 @@ export default {
               center: { x: 1, y: 0 },
             },
           ],
-            screen: [], // 10*20显示格子
+          screen: [], // 10*20显示格子
         };
         yield put({
           type: 'initState',
@@ -202,7 +202,7 @@ export default {
       }
     },
     *clearScreen({ payload }, { select, call, put }) {
-      let state = yield select(state => state.tetris);
+      const state = yield select(state => state.tetris);
       const initScreen = (row, column) => {
         const pixels = [];
         for (let i = 1; i <= row; i++) {
@@ -227,8 +227,7 @@ export default {
       });
     },
     *startGame({ payload }, { select, call, put }) {
-      let state = yield select(state => state.tetris);
-
+      const state = yield select(state => state.tetris);
     },
     *createShape({ payload }, { select, call, put }) {
       yield put({
@@ -236,8 +235,8 @@ export default {
         payload: { screen: false, next: true },
       });
 
-      let state = yield select(state => state.tetris);
-      let next = JSON.parse(JSON.stringify(state.next));
+      const state = yield select(state => state.tetris);
+      const next = JSON.parse(JSON.stringify(state.next));
       const shapes = state.shapes;
       const index = Math.floor(Math.random() * shapes.length);
       // const index = 3;
@@ -284,8 +283,8 @@ export default {
       if (state.status !== 'start') {
         return;
       }
-      let shape = JSON.parse(JSON.stringify(state.currentShape));
-      let screen = [...state.screen];
+      const shape = JSON.parse(JSON.stringify(state.currentShape));
+      const screen = [...state.screen];
       const next = state.next;
 
       screen.forEach((line) => {
@@ -297,7 +296,7 @@ export default {
       });
 
       if (move) {
-        shape.center.x = shape.center.x + move.x;
+        shape.center.x += move.x;
         shape.center.y += move.y;
         shape.cells.forEach((item) => {
           item.x += move.x;
@@ -390,22 +389,22 @@ export default {
     *claerShape({ payload }, { select, call, put }) {
       const state = yield select(state => state.tetris);
       const screen = JSON.parse(JSON.stringify(state.screen));
-      let newScreen = [];
-      let removeLines = [];
+      const newScreen = [];
+      const removeLines = [];
       let addScore = 0;
       let lineCount = 0;
 
       screen.forEach((line) => {
         if (line.every(item => item.filled)) {
           removeLines.push(line.map((item) => { return { ...item, filled: false }; }));
-          addScore = addScore + 10;
-          lineCount ++;
+          addScore += 10;
+          lineCount++;
         } else {
           newScreen.push(line);
         }
       });
       if (addScore) {
-        const score = state.score + addScore*lineCount;
+        const score = state.score + (addScore * lineCount);
         yield put({
           type: 'updateScore',
           payload: {
