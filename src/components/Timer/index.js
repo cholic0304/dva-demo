@@ -29,7 +29,7 @@ class Clock extends React.Component {
   render() {
     return (
       <div className={styles.clock}>
-        <p>现在是 <span className={styles.time}>{this.state.date.toLocaleTimeString()}</span></p>
+        <p>现在是 <span className={styles.time}>{this.state.date.toLocaleString()}</span></p>
       </div>
     );
   }
